@@ -7,32 +7,6 @@ root = pyrootutils.setup_root(
     dotenv=True,
 )
 
-# ------------------------------------------------------------------------------------ #
-# `pyrootutils.setup_root(...)` is an optional line at the top of each entry file
-# that helps to make the environment more robust and convenient
-#
-# the main advantages are:
-# - allows you to keep all entry files in "src/" without installing project as a package
-# - makes paths and scripts always work no matter where is your current work dir
-# - automatically loads environment variables from ".env" file if exists
-#
-# how it works:
-# - the line above recursively searches for either ".git" or "pyproject.toml" in present
-#   and parent dirs, to determine the project root dir
-# - adds root dir to the PYTHONPATH (if `pythonpath=True`), so this file can be run from
-#   any place without installing project as a package
-# - sets PROJECT_ROOT environment variable which is used in "configs/paths/default.yaml"
-#   to make all paths always relative to the project root
-# - loads environment variables from ".env" file in root dir (if `dotenv=True`)
-#
-# you can remove `pyrootutils.setup_root(...)` if you:
-# 1. either install project as a package or move each entry file to the project root dir
-# 2. simply remove PROJECT_ROOT variable from paths in "configs/paths/default.yaml"
-# 3. always run entry files from the project root dir
-#
-# https://github.com/ashleve/pyrootutils
-# ------------------------------------------------------------------------------------ #
-
 from typing import List, Optional, Tuple
 
 import hydra
@@ -48,20 +22,6 @@ log = utils.get_pylogger(__name__)
 
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
-    """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
-    training.
-
-    This method is wrapped in optional @task_wrapper decorator which applies extra utilities
-    before and after the call.
-
-    Args:
-        cfg (DictConfig): Configuration composed by Hydra.
-
-    Returns:
-        Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
-    """
-
-    # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
         pl.seed_everything(cfg.seed, workers=True)
 

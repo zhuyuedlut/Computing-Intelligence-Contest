@@ -1,0 +1,9 @@
+_target_: src.datamodules.mnist_datamodule.CCFDataModule
+data_dir: ${paths.data_dir}
+model_dir: ${paths.model_dir}
+fold: 5
+train_batch_size: 32
+valid_batch_size: 16
+test_batch_size: 32
+num_workers: 0
+pin_memory: False

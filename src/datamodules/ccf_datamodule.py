@@ -1,14 +1,12 @@
-from typing import Any, Dict, Optional, Tuple, List
+from typing import Type, Optional, List
 
 import os
-import json
 
 import torch
 import pandas as pd
 
 from dataclasses import dataclass
 from sklearn.model_selection import StratifiedKFold
-from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset, Subset
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
@@ -71,6 +69,7 @@ class CCFDataModule(BaseKFoldDataModule):
             split for split in
             StratifiedKFold(n_splits=self.fold).split(X=self.train_dataset.df, y=self.train_dataset.label,
                                                       groups=self.train_dataset.label)]
+        print(self.splits)
 
     def setup_fold_index(self, fold_index: int) -> None:
         train_indices, val_indices = self.splits[fold_index]
@@ -101,3 +100,14 @@ class CCFDataModule(BaseKFoldDataModule):
         self.splits: Optional[List] = None
 
         self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(self.hparams.model_dir)
+
+
+if __name__ == "__main__":
+    import hydra
+    import omegaconf
+    import pyrootutils
+
+    root = pyrootutils.setup_root(__file__, pythonpath=True)
+    cfg = omegaconf.OmegaConf.load(root / "configs" / "datamodule" / "ccf.yaml")
+    cfg.data_dir = os.getenv("DATASET_PATH")
+    _ = hydra.utils.instantiate(cfg)

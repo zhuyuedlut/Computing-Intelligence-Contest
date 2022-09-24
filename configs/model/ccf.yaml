@@ -1,0 +1,15 @@
+_target_: src.models.ccf_module.CCFModule
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 2e-5
+  eps: 1e-6
+  betas: (0.9, 0.999)
+  weight_decay: 0.0
+
+scheduler:
+  _target_: transformers.get_cosine_schedule_with_warmup
+  _partial_: true
+  num_warmup_steps: 0
+  num_cycles: 0.5

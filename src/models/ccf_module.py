@@ -1,9 +1,12 @@
 from typing import Any, List
 
 import torch
-from pytorch_lightning import LightningModule
+
+from torch.nn import BCEWithLogitsLoss
 from torchmetrics import MeanMetric, MaxMetric
 from torchmetrics.classification.accuracy import Accuracy
+
+from pytorch_lightning import LightningModule
 
 
 class CCFModule(LightningModule):
@@ -33,15 +36,14 @@ class CCFModule(LightningModule):
     def step(self, batch: Any):
         x, y = batch
         output = self.forward(x)
-
-        loss = output.loss
         logits = output.logits
         preds = torch.argmax(logits, dim=1)
 
-        return loss, preds, y
+        return logits, preds, y
 
     def training_step(self, batch: Any, batch_idx: int):
-        loss, preds, targets = self.step(batch)
+        logits, preds, targets = self.step(batch)
+        loss = BCEWithLogitsLoss(logits, targets)
 
         self.train_loss(loss)
         self.train_acc(preds, targets)
@@ -55,7 +57,8 @@ class CCFModule(LightningModule):
         pass
 
     def validation_step(self, batch: Any, batch_idx: int):
-        loss, preds, targets = self.step(batch)
+        logits, preds, targets = self.step(batch)
+        loss = BCEWithLogitsLoss(logits, targets)
 
         self.val_loss(loss)
         self.val_acc(preds, targets)

@@ -19,6 +19,7 @@ net:
   bert:
     _target_: src.models.components.backbone.bert.Bert
     model_dir: ${paths.model_dir}
+    aggregator_names: ['bert_pooler', 'max_pooler']
   classifier:
     _target_: src.models.components.backbone.MultSampleClassifier
     dropout_rate: 0.2

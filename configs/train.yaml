@@ -7,7 +7,7 @@ defaults:
   - datamodule: ccf.yaml
   - model: ccf.yaml
   - callbacks: default.yaml
-  - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - logger: wandb.yaml
   - trainer: default.yaml
   - paths: default.yaml
   - extras: default.yaml

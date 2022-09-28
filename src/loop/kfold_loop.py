@@ -11,11 +11,12 @@ from src.datamodules.components.BaseKFoldDataModule import BaseKFoldDataModule
 
 
 class KFoldLoop(Loop):
-    def __init__(self, num_folds: int, export_path: str) -> None:
+    def __init__(self, num_folds: int, checkpoint_path: str, checkpoint_name: str) -> None:
         super(KFoldLoop, self).__init__()
         self.num_folds = num_folds
         self.current_fold: int = 0
-        self.export_path = export_path
+        self.checkpoint_path = checkpoint_path
+        self.checkpoint_name = checkpoint_name
 
     @property
     def done(self) -> bool:
@@ -51,7 +52,7 @@ class KFoldLoop(Loop):
 
     def on_advance_end(self) -> None:
         """Used to save the weights of the current fold and reset the LightningModule and its optimizers."""
-        self.trainer.save_checkpoint(os.path.join(self.export_path, f"model.{self.current_fold}.pt"))
+        self.trainer.save_checkpoint(os.path.join(self.checkpoint_path, f"fold-{self.current_fold}-{self.checkpoint_name}.pt"))
         # restore the original weights + optimizers and schedulers.
         self.trainer.lightning_module.load_state_dict(self.lightning_module_state_dict)
         self.trainer.strategy.setup_optimizers(self.trainer)

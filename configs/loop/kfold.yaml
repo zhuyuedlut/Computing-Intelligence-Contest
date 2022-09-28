@@ -1,0 +1,4 @@
+_target_: src.loop.kfold_loop.KFoldLoop
+num_folds: 5
+checkpoint_path: ${callbacks.model_checkpoints.dirpath}
+checkpoint_name: ${callbacks.model_checkpoints.filename}

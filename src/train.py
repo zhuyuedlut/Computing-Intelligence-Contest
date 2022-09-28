@@ -12,6 +12,7 @@ from typing import List, Optional, Tuple
 import hydra
 import pytorch_lightning as pl
 from omegaconf import DictConfig
+from pytorch_lightning.loops.loop import Loop
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
 
@@ -40,6 +41,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
 
+    log.info(f"Instantiating KFoldLoop <{cfg.loop._target_}>")
+    loop: Loop = hydra.utils.instantiate(cfg.loop)
+
     object_dict = {
         "cfg": cfg,
         "datamodule": datamodule,
@@ -55,6 +59,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     if cfg.get("train"):
         log.info("Starting training!")
+        internal_fit_loop = trainer.fit_loop
+        trainer.fit_loop = loop
+        trainer.fit_loop.connect(internal_fit_loop)
         trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
     train_metrics = trainer.callback_metrics

@@ -6,7 +6,7 @@ defaults:
   - _self_
   - datamodule: ccf.yaml
   - model: ccf.yaml
-  - callbacks: default.yaml
+  - callbacks: ccf.yaml
   - logger: wandb.yaml
   - trainer: default.yaml
   - paths: default.yaml

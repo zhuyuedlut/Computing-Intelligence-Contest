@@ -6,11 +6,10 @@ wandb:
   save_dir: "${paths.output_dir}"
   offline: False
   id: null # pass correct id to resume experiment!
-  anonymous: null # enable anonymous logging
-  project: "lightning-hydra-template"
+  anonymous: False # enable anonymous logging
+  project: "Computing-Intelligence-Contest"
   log_model: False # upload lightning ckpts
   prefix: "" # a string to put at the beginning of metric keys
-  # entity: "" # set to name of your wandb team
-  group: ""
+  group: "nlp"
   tags: []
-  job_type: ""
+  job_type: "fine-tuning"

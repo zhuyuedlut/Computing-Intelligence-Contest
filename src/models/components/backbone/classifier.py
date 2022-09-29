@@ -5,10 +5,10 @@ import torch.nn as nn
 
 
 class Classifier(nn.Module):
-    def __init__(self, input_dim: int, num_labels: int, dropout_rate: float):
+    def __init__(self, input_dim: int, num_class: int, dropout_rate: float):
         super(Classifier, self).__init__()
         self.dropout = nn.Dropout(dropout_rate)
-        self.linear = nn.Linear(input_dim, num_labels)
+        self.linear = nn.Linear(input_dim, num_class)
 
     def forward(self, x: torch.Tensor):
         x = self.dropout(x)
@@ -17,10 +17,10 @@ class Classifier(nn.Module):
 
 
 class MultSampleClassifier(nn.Module):
-    def __init__(self, input_dim: int, num_labels: int, dropout_num: int, dropout_rate: float):
+    def __init__(self, input_dim: int, num_class: int, dropout_num: int, dropout_rate: float):
         super(MultSampleClassifier, self).__init__()
 
-        self.linear = nn.Linear(input_dim, num_labels)
+        self.linear = nn.Linear(input_dim, num_class)
         self.dropout_ops = nn.ModuleList(
             [nn.Dropout(dropout_rate) for _ in range(dropout_num)]
         )

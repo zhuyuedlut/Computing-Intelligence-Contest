@@ -1,3 +1,4 @@
+import os
 from typing import Any, List
 
 import torch
@@ -18,7 +19,7 @@ class CCFModule(LightningModule):
     ):
         super(CCFModule, self).__init__()
 
-        self.save_hyperparameters(logger=False, ingore=["net"])
+        self.save_hyperparameters(logger=False, ignore=["net"])
 
         self.net = net
 
@@ -92,13 +93,3 @@ class CCFModule(LightningModule):
                 "frequency": 1,
             },
         }
-
-
-if __name__ == "__main__":
-    import hydra
-    import omegaconf
-    import pyrootutils
-
-    root = pyrootutils.setup_root(__file__, pythonpath=True)
-    cfg = omegaconf.OmegaConf.load(root / "configs" / "model" / "ccf.yaml")
-    _ = hydra.utils.instantiate(cfg)

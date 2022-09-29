@@ -5,12 +5,11 @@ import os
 import torch
 import pandas as pd
 
-from dataclasses import dataclass
 from sklearn.model_selection import StratifiedKFold
 from torch.utils.data import DataLoader, Dataset, Subset
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
-from components.BaseKFoldDataModule import BaseKFoldDataModule
+from src.datamodules.components.BaseKFoldDataModule import BaseKFoldDataModule
 from src.utils.utils import read_json
 
 
@@ -40,28 +39,44 @@ class CCFDataset(Dataset):
                torch.Tensor(inputs['attention_mask'], dtype=torch.long), \
                torch.Tensor(label, dtype=torch.long)
 
-
-@dataclass
 class CCFDataModule(BaseKFoldDataModule):
-    data_dir: str
-    model_dir: str
-    fold: int
-    train_batch_size: int
-    valid_batch_size: int
-    test_batch_size: int
-    num_workers: int = 0
-    pin_memory: bool = False
+    def __init__(
+        self,
+        data_dir: str,
+        model_dir: str,
+        fold: int,
+        num_class: int,
+        train_batch_size: int,
+        valid_batch_size: int,
+        test_batch_size: int,
+        num_workers: int = 0,
+        pin_memory: bool = False
+    ):
+        super(CCFDataModule, self).__init__()
+
+        self.save_hyperparameters()
+
+        self.train_dataset: Optional[Dataset] = None
+        self.test_dataset: Optional[Dataset] = None
+
+        self.train_fold: Optional[Dataset] = None
+        self.val_fold: Optional[Dataset] = None
+
+        self.num_folds: Optional[int] = None
+        self.splits: Optional[List] = None
+
+        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(self.hparams.model_dir)
 
     @property
     def num_class(self):
-        return 36
+        return self.num_class
 
     def setup(self, stage: Optional[str] = None) -> None:
         train = pd.DataFrame(read_json(os.path.join(self.hparams.data_dir, 'train.json')))
-        test = pd.DataFrame(read_json(os.path.join(self.hparams.data_dir, 'testA.json')))
+        predict = pd.DataFrame(read_json(os.path.join(self.hparams.data_dir, 'testA.json')))
 
         self.train_dataset = CCFDataset(train, self.tokenizer)
-        self.test_dataset = CCFDataset(test, self.tokenizer)
+        self.predict_dataset = CCFDataset(predict, self.tokenizer)
 
     def setup_folds(self, num_folds: int) -> None:
         self.num_folds = num_folds
@@ -82,24 +97,9 @@ class CCFDataModule(BaseKFoldDataModule):
     def val_dataloader(self) -> DataLoader:
         return DataLoader(self.val_fold)
 
-    def test_dataloader(self) -> DataLoader:
-        return DataLoader(self.test_dataset)
+    def predict_dataloader(self) -> DataLoader:
+        return DataLoader(self.predict_dataset)
 
-    def __post_init__(self):
-        super(CCFDataModule, self).__init__()
-
-        self.save_hyperparameters()
-
-        self.train_dataset: Optional[Dataset] = None
-        self.test_dataset: Optional[Dataset] = None
-
-        self.train_fold: Optional[Dataset] = None
-        self.val_fold: Optional[Dataset] = None
-
-        self.num_folds: Optional[int] = None
-        self.splits: Optional[List] = None
-
-        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(self.hparams.model_dir)
 
 
 if __name__ == "__main__":
@@ -110,4 +110,5 @@ if __name__ == "__main__":
     root = pyrootutils.setup_root(__file__, pythonpath=True)
     cfg = omegaconf.OmegaConf.load(root / "configs" / "datamodule" / "ccf.yaml")
     cfg.data_dir = os.getenv("DATASET_PATH")
+    cfg.model_dir = os.getenv("PRETRAINED_MODEL_PATH")
     _ = hydra.utils.instantiate(cfg)

@@ -3,6 +3,8 @@
 # PROJECT_ROOT is inferred and set by pyrootutils package in `train.py` and `eval.py`
 root_dir: ${oc.env:PROJECT_ROOT}
 
+model_dir: ${oc.env:PRETRAINED_MODEL_PATH}
+
 # path to data directory
 data_dir: ${paths.root_dir}/data/
 

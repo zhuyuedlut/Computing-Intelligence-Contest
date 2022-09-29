@@ -1,3 +1,5 @@
+import os
+
 from typing import List, Optional
 
 import torch
@@ -20,6 +22,8 @@ class Bert(nn.Module):
 
         self.config = AutoConfig.from_pretrained(model_dir)
         self.model = AutoModel.from_pretrained(model_dir)
+
+        self.aggregator_names = aggregator_names
 
         self.aggregators: ModuleList = nn.ModuleList()
 
@@ -47,4 +51,11 @@ class Bert(nn.Module):
 
         return pooled_outputs
 
+if __name__ == "__main__":
+    import hydra
+    import omegaconf
+    import pyrootutils
 
+    root = pyrootutils.setup_root(__file__, pythonpath=True)
+    cfg = omegaconf.OmegaConf.load(root / "configs" / "model" / "ccf.yaml")
+    _ = hydra.utils.instantiate(cfg)

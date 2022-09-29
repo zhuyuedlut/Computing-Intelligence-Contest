@@ -1,5 +1,18 @@
 _target_: src.models.ccf_module.CCFModule
 
+net:
+  _target_: src.models.components.classifier_net.ClassifierNet
+  bert:
+    _target_: src.models.components.backbone.bert.Bert
+    model_dir: ${paths.model_dir}
+    aggregator_names: ['bert_pooler', 'max_pooler']
+  classifier:
+    _target_: src.models.components.backbone.classifier.MultSampleClassifier
+    input_dim: 768
+    num_class: ${datamodule.num_class}
+    dropout_rate: 0.2
+    dropout_num: 4
+
 optimizer:
   _target_: torch.optim.AdamW
   _partial_: true
@@ -13,14 +26,3 @@ scheduler:
   _partial_: true
   num_warmup_steps: 0
   num_cycles: 0.5
-
-net:
-  _target_: src.models.components.classifier_net.ClassifierNet
-  bert:
-    _target_: src.models.components.backbone.bert.Bert
-    model_dir: ${paths.model_dir}
-    aggregator_names: ['bert_pooler', 'max_pooler']
-  classifier:
-    _target_: src.models.components.backbone.MultSampleClassifier
-    dropout_rate: 0.2
-    dropout_num: 4

@@ -23,7 +23,7 @@ pytest~=7.1.3
 # sh            # for running bash commands in some tests (linux/macos only)
 
 omegaconf~=2.2.3
-pandas~=1.4.1
+pandas~=1.5.1
 sklearn~=0.0
 scikit-learn~=1.0.2
 transformers~=4.22.1

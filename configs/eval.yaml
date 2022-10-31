@@ -6,6 +6,7 @@ defaults:
   - model: mnist.yaml
   - logger: null
   - trainer: default.yaml
+  - loop: kfold.yaml
   - paths: default.yaml
   - extras: default.yaml
   - hydra: default.yaml

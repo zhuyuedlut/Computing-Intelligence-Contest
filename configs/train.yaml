@@ -9,6 +9,7 @@ defaults:
   - callbacks: ccf.yaml
   - logger: wandb.yaml
   - trainer: default.yaml
+  - loop: kfold.yaml
   - paths: default.yaml
   - extras: default.yaml
   - hydra: default.yaml

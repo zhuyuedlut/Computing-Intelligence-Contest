@@ -6,7 +6,7 @@ root_dir: ${oc.env:PROJECT_ROOT}
 model_dir: ${oc.env:PRETRAINED_MODEL_PATH}
 
 # path to data directory
-data_dir: ${paths.root_dir}/data/
+data_dir: ${oc.env:DATASET_PATH}
 
 # path to logging directory
 log_dir: ${paths.root_dir}/logs/

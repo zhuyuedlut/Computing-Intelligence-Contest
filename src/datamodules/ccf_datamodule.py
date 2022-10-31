@@ -14,30 +14,40 @@ from src.utils.utils import read_json
 
 
 class CCFDataset(Dataset):
-    def __init__(self, df: pd.DataFrame, tokenizer: PreTrainedTokenizer):
+    def __init__(self, df: pd.DataFrame, tokenizer: PreTrainedTokenizer, is_train: bool = True):
         self.df = df
         self.title = df['title'].values
         self.assignee = df['assignee'].values
         self.abstract = df['abstract'].values
-        self.label = df['label_id'].values
         self.tokenizer = tokenizer
         self.sep_token = tokenizer.sep_token
+        self.is_train = is_train
+
+        if self.is_train:
+            self.label = df['label_id'].values
 
     def __len__(self):
         return len(self.title)
 
     def __getitem__(self, item: int):
-        label = int(self.label[item])
         title = self.title[item]
         assignee = self.assignee[item]
         abstract = self.abstract[item]
 
         input_text = title + self.sep_token + assignee + self.sep_token + abstract
-
         inputs = self.tokenizer(input_text, truncation=True, max_length=400, padding='max_length')
-        return torch.Tensor(inputs['input_ids'], dtype=torch.long), \
-               torch.Tensor(inputs['attention_mask'], dtype=torch.long), \
-               torch.Tensor(label, dtype=torch.long)
+
+        if self.is_train:
+            label = self.label[item]
+
+            return torch.Tensor(inputs['input_ids'], dtype=torch.long), \
+                   torch.Tensor(inputs['attention_mask'], dtype=torch.long), \
+                   torch.Tensor(label, dtype=torch.long)
+        else:
+            return torch.Tensor(inputs['input_ids'], dtype=torch.long), \
+               torch.Tensor(inputs['attention_mask'], dtype=torch.long)
+
+
 
 class CCFDataModule(BaseKFoldDataModule):
     def __init__(

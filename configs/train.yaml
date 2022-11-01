@@ -8,7 +8,7 @@ defaults:
   - model: ccf.yaml
   - callbacks: ccf.yaml
   - logger: wandb.yaml
-  - trainer: default.yaml
+  - trainer: ddp.yaml
   - loop: kfold.yaml
   - paths: default.yaml
   - extras: default.yaml

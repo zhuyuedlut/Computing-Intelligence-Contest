@@ -62,7 +62,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         internal_fit_loop = trainer.fit_loop
         trainer.fit_loop = loop
         trainer.fit_loop.connect(internal_fit_loop)
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        trainer.fit(model=model, datamodule=datamodule)
 
     train_metrics = trainer.callback_metrics
 

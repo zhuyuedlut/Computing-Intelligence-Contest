@@ -81,7 +81,8 @@ class CCFModule(LightningModule):
         optimizer = self.hparams.optimizer(params=self.parameters())
         scheduler = self.hparams.scheduler(
             optimizer=optimizer,
-            num_training_steps=self.trainer.estimated_stepping_batches
+            # temp set 1000 in order to debugger
+            num_training_steps=1000
         )
 
         return {

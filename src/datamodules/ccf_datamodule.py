@@ -86,7 +86,7 @@ class CCFDataModule(BaseKFoldDataModule):
         predict = pd.DataFrame(read_json(os.path.join(self.hparams.data_dir, 'testA.json')))
 
         self.train_dataset = CCFDataset(train, self.tokenizer)
-        self.predict_dataset = CCFDataset(predict, self.tokenizer)
+        self.predict_dataset = CCFDataset(predict, self.tokenizer, is_train=False)
 
     def setup_folds(self, num_folds: int) -> None:
         self.num_folds = num_folds
